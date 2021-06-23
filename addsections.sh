@@ -8,10 +8,10 @@ then
 fi
 
 
-SECTIONS=BITSTREAM,MEM_TOPOLOGY,IP_LAYOUT,CONNECTIVITY,BUILD_METADATA,EMBEDDED_METADATA,SYSTEM_METADATA,GROUP_CONNECTIVITY,GROUP_TOPOLOGY
+SECTIONS=BITSTREAM,BITSTREAM_PARTIAL_PDI,MEM_TOPOLOGY,IP_LAYOUT,CONNECTIVITY,BUILD_METADATA,EMBEDDED_METADATA,SYSTEM_METADATA,GROUP_CONNECTIVITY,GROUP_TOPOLOGY
 BIN=$1
 CMD=xclbinutil
-FLAGS="--key-value SYS:dfx_enable:true --force -o $2"
+FLAGS="--target hw --key-value SYS:dfx_enable:true --force -o $2"
 
 for i in ${SECTIONS//,/ }
 do
@@ -19,9 +19,9 @@ do
     LOWER=$(echo "$i" | awk '{print tolower($0)}')
     case $i in
 
-    BITSTREAM)
-    if [ -f "${BIN}_bitstream.bit" ]; then
-        FLAGS=$(echo "--add-section BITSTREAM:RAW:${BIN}_bitstream.bit $FLAGS")
+    BITSTREAM | BITSTREAM_PARTIAL_PDI)
+    if [ -f "${BIN}_${LOWER}.bit" ]; then
+        FLAGS=$(echo "--add-section ${i}:RAW:${BIN}_${LOWER}.bit $FLAGS")
     fi
     ;;
 
